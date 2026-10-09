@@ -1,0 +1,36 @@
+# Each experiment = (image encoder, text encoder, head) trained over `seeds`.
+# Encoders refer to cached features under features/<encoder>/.
+seeds: [0, 1, 2, 3, 4]
+defaults:
+  hidden: 512
+  dropout: 0.2
+  lr: 1.0e-3
+  weight_decay: 1.0e-2
+  batch_size: 64
+  max_epochs: 40
+  patience: 6
+  modality_dropout: 0.0
+  pos_weight: false
+
+experiments:
+  # RQ1 - Does fusing image + text beat either modality alone? (aligned CLIP features)
+  - {name: clip_text_only,   image: clip-b32, text: clip-b32, model: text_only,   group: rq1}
+  - {name: clip_image_only,  image: clip-b32, text: clip-b32, model: image_only,  group: rq1}
+  - {name: clip_late,        image: clip-b32, text: clip-b32, model: late,        group: rq1}
+  - {name: clip_concat,      image: clip-b32, text: clip-b32, model: concat,      group: rq1}
+  - {name: clip_interaction, image: clip-b32, text: clip-b32, model: interaction, group: rq1}
+  - {name: clip_gated,       image: clip-b32, text: clip-b32, model: gated,       group: rq1}
+  - {name: clip_cross_attn,  image: clip-b32, text: clip-b32, model: cross_attn,  group: rq1,
+     hidden: 256, lr: 3.0e-4, batch_size: 32}
+
+  # RQ2 - Does it matter that the encoders were pretrained to align? (BERT + DINOv2 vs CLIP)
+  - {name: bert_text_only,        image: dinov2-s, text: bert, model: text_only,   group: rq2}
+  - {name: dino_image_only,       image: dinov2-s, text: bert, model: image_only,  group: rq2}
+  - {name: unaligned_concat,      image: dinov2-s, text: bert, model: concat,      group: rq2}
+  - {name: unaligned_interaction, image: dinov2-s, text: bert, model: interaction, group: rq2}
+
+  # RQ3 - Robustness: train with modality dropout so the model can't shortcut through one modality.
+  - {name: clip_interaction_moddrop, image: clip-b32, text: clip-b32, model: interaction,
+     modality_dropout: 0.3, group: rq3}
+  - {name: clip_interaction_posw,    image: clip-b32, text: clip-b32, model: interaction,
+     pos_weight: true, group: rq3}

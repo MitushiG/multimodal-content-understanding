@@ -1,0 +1,10 @@
+torch>=2.2
+torchvision
+transformers>=4.44
+scikit-learn
+pandas
+matplotlib
+pyyaml
+pillow
+tqdm
+pytest

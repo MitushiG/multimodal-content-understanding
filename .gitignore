@@ -1,0 +1,9 @@
+.venv/
+data/
+features*/
+results*/runs/
+results_synth/
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
